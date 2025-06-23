@@ -8,15 +8,15 @@ use ItDelmax\AuthCache\Models\Uposljeni;
 use ItDelmax\AuthCache\Models\AccountType;
 use ItDelmax\AuthCache\Models\EtgApi;
 use ItDelmax\AuthCache\Models\EtgApiUser;
+use ItDelmax\AuthCache\Modles\Traits\CachesRelationships;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
-use ItDelmax\AuthCache\Traits\CachesRelationships;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
