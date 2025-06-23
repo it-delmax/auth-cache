@@ -4,6 +4,7 @@ namespace ItDelmax\AuthCache\Services;
 
 use ItDelmax\AuthCache\Models\EtgApi;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use ItDelmax\AuthCache\Models\PersonalAccessToken;
 use ItDelmax\AuthCache\Models\EtgApiUser;
 use ItDelmax\AuthCache\Models\User;
@@ -102,7 +103,7 @@ class TokenCacheService
             }
             return false;
         } catch (\Exception $e) {
-            \Log::error("Failed to warm user cache for user {$userId}: " . $e->getMessage());
+            Log::error("Failed to warm user cache for user {$userId}: " . $e->getMessage());
             return false;
         }
     }
@@ -117,7 +118,7 @@ class TokenCacheService
             }
             return false;
         } catch (\Exception $e) {
-            \Log::error("Failed to warm token cache for token {$tokenHash}: " . $e->getMessage());
+            Log::error("Failed to warm token cache for token {$tokenHash}: " . $e->getMessage());
             return false;
         }
     }
@@ -135,7 +136,7 @@ class TokenCacheService
                     }
                 });
         } catch (\Exception $e) {
-            \Log::error("Failed to warm all active tokens: " . $e->getMessage());
+            Log::error("Failed to warm all active tokens: " . $e->getMessage());
         }
         return $count;
     }
@@ -157,7 +158,7 @@ class TokenCacheService
                     $this->invalidateToken($token->token);
                 });
         } catch (\Exception $e) {
-            \Log::error("Failed to invalidate user tokens for user {$userId}: " . $e->getMessage());
+            Log::error("Failed to invalidate user tokens for user {$userId}: " . $e->getMessage());
         }
     }
 
@@ -172,7 +173,7 @@ class TokenCacheService
                 $count++;
             }
         } catch (\Exception $e) {
-            \Log::error("Failed to invalidate expired tokens: " . $e->getMessage());
+            Log::error("Failed to invalidate expired tokens: " . $e->getMessage());
         }
         return $count;
     }
@@ -194,9 +195,9 @@ class TokenCacheService
         try {
             // Ne možemo koristiti Cache::flush() jer bi obrisao sve
             // Umesto toga, moramo brisati po pattern-u
-            \Log::info("Cache flush requested - implementing pattern-based clearing would be needed");
+            Log::info("Cache flush requested - implementing pattern-based clearing would be needed");
         } catch (\Exception $e) {
-            \Log::error("Failed to flush cache: " . $e->getMessage());
+            Log::error("Failed to flush cache: " . $e->getMessage());
         }
     }
 }
