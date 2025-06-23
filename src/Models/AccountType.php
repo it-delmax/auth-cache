@@ -3,7 +3,7 @@
 namespace ItDelmax\AuthCache\Models;
 
 use ItDelmax\AuthCache\Models\User;
-use Firebird\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class AccountType extends Model
 {

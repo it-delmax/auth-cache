@@ -2,10 +2,10 @@
 
 namespace ItDelmax\AuthCache\Models;
 
-use App\Models\Etg\Branch;
-use App\Models\Etg\Partner;
-use App\Models\Etg\Uposljeni;
-use App\Models\Etg\AccountType;
+use ItDelmax\AuthCache\Models\Branch;
+use ItDelmax\AuthCache\Models\Partner;
+use ItDelmax\AuthCache\Models\Uposljeni;
+use ItDelmax\AuthCache\Models\AccountType;
 use ItDelmax\AuthCache\Models\EtgApi;
 use ItDelmax\AuthCache\Models\EtgApiUser;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
