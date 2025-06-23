@@ -11,10 +11,18 @@ use ItDelmax\AuthCache\Models\User;
 
 class TokenCacheService
 {
-    protected $userTTL = 6 * 60 * 60; // 6 sati
-    protected $tokenTTL = 12 * 60 * 60; // 12 sati
-    protected $apiAccessTTL = 24 * 60 * 60; // 24 sata (retko se menja!)
-    protected $apiSlugTTL = 24 * 60 * 60; // 24 sata (skoro nikad se ne menja)
+    protected $userTTL;
+    protected $tokenTTL;
+    protected $apiAccessTTL;
+    protected $apiSlugTTL;
+
+    public function __construct()
+    {
+        $this->userTTL = config('auth-cache.ttl.user', 6 * 60 * 60);
+        $this->tokenTTL = config('auth-cache.ttl.token', 12 * 60 * 60);
+        $this->apiAccessTTL = config('auth-cache.ttl.api_access', 24 * 60 * 60);
+        $this->apiSlugTTL = config('auth-cache.ttl.api_slug', 24 * 60 * 60);
+    }
 
     /**
      * Cache keys prefixes
@@ -26,7 +34,8 @@ class TokenCacheService
 
     public function cacheToken(PersonalAccessToken $token): void
     {
-        Cache::put("token:{$token->token}", [
+        $prefix = config('auth-cache.prefixes.token', 'token:');
+        Cache::put("{$prefix}{$token->token}", [
             'user_id' => $token->tokenable_id,
             'token_id' => $token->id,
             'abilities' => $token->abilities,
@@ -36,58 +45,68 @@ class TokenCacheService
 
     public function getCachedToken(string $tokenHash): ?array
     {
-        return Cache::get("token:{$tokenHash}");
+        $prefix = config('auth-cache.prefixes.token', 'token:');
+        return Cache::get("{$prefix}{$tokenHash}");
     }
 
     public function invalidateToken(string $tokenHash): void
     {
-        Cache::forget("token:{$tokenHash}");
+        $prefix = config('auth-cache.prefixes.token', 'token:');
+        Cache::forget("{$prefix}{$tokenHash}");
     }
 
     public function cacheUserApiAccess(int $userId): void
     {
         $access = EtgApiUser::where('USER_ID', $userId)->active()->notExpired()->get();
 
-        Cache::put("api_access:{$userId}", $access, $this->apiAccessTTL);
+        $prefix = config('auth-cache.prefixes.api_access', 'api_access:');
+        Cache::put("{$prefix}{$userId}", $access, $this->apiAccessTTL);
     }
 
     public function getUserApiAccess(int $userId)
     {
-        return Cache::get("api_access:{$userId}");
+        $prefix = config('auth-cache.prefixes.api_access', 'api_access:');
+        return Cache::get("{$prefix}{$userId}");
     }
 
     public function invalidateUserAccess(int $userId): void
     {
-        Cache::forget("api_access:{$userId}");
+        $prefix = config('auth-cache.prefixes.api_access', 'api_access:');
+        Cache::forget("{$prefix}{$userId}");
     }
 
     public function getApiBySlug(string $slug)
     {
-        return Cache::remember("api_slug:{$slug}", $this->apiSlugTTL, function () use ($slug) {
+        $prefix = config('auth-cache.prefixes.api_slug', 'api_slug:');
+        return Cache::remember("{$prefix}{$slug}", $this->apiSlugTTL, function () use ($slug) {
             return EtgApi::active()->bySlug($slug)->first();
         });
     }
 
     public function invalidateApiBySlug(string $slug): void
     {
-        Cache::forget("api_slug:{$slug}");
+        $prefix = config('auth-cache.prefixes.api_slug', 'api_slug:');
+        Cache::forget("{$prefix}{$slug}");
     }
 
     public function cacheUser(User $user): void
     {
         if ($user) {
-            Cache::put("user:{$user->user_id}", $user, $this->userTTL);
+            $prefix = config('auth-cache.prefixes.user', 'user:');
+            Cache::put("{$prefix}{$user->user_id}", $user, $this->userTTL);
         }
     }
 
     public function getCachedUser(int $userId): ?User
     {
-        return Cache::get("user:{$userId}");
+        $prefix = config('auth-cache.prefixes.user', 'user:');
+        return Cache::get("{$prefix}{$userId}");
     }
 
     public function invalidateUser(int $userId): void
     {
-        Cache::forget("user:{$userId}");
+        $prefix = config('auth-cache.prefixes.user', 'user:');
+        Cache::forget("{$prefix}{$userId}");
     }
 
     // ==================== CACHE WARMING METHODS ====================
