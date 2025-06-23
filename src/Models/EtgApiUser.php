@@ -4,6 +4,8 @@ namespace ItDelmax\AuthCache\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use ItDelmax\AuthCache\Models\EtgApi;
+use ItDelmax\AuthCache\Models\User;
 
 class EtgApiUser extends Model
 {
