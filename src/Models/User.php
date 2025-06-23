@@ -8,7 +8,7 @@ use ItDelmax\AuthCache\Models\Uposljeni;
 use ItDelmax\AuthCache\Models\AccountType;
 use ItDelmax\AuthCache\Models\EtgApi;
 use ItDelmax\AuthCache\Models\EtgApiUser;
-use ItDelmax\AuthCache\Modles\Traits\CachesRelationships;
+use ItDelmax\AuthCache\Models\Traits\CachesRelationships;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
