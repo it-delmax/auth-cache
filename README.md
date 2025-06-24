@@ -16,15 +16,15 @@ Laravel package for advanced authentication and cache management with Firebird d
 
 ```json
 {
-    "repositories": [
-        {
-            "type": "path",
-            "url": "packages/it-delmax/auth-cache"
-        }
-    ],
-    "require": {
-        "it-delmax/auth-cache": "*"
+  "repositories": [
+    {
+      "type": "path",
+      "url": "packages/it-delmax/auth-cache"
     }
+  ],
+  "require": {
+    "it-delmax/auth-cache": "*"
+  }
 }
 ```
 
@@ -44,11 +44,11 @@ composer dump-autoload
 
 ```json
 {
-    "autoload": {
-        "psr-4": {
-            "ItDelmax\\AuthCache\\": "packages/it-delmax/auth-cache/src/"
-        }
+  "autoload": {
+    "psr-4": {
+      "ItDelmax\\AuthCache\\": "packages/it-delmax/auth-cache/src/"
     }
+  }
 }
 ```
 
@@ -180,6 +180,9 @@ Add to your `config/app.php` providers array (if auto-discovery doesn't work):
 ### 8. Environment Variables
 
 ```env
+#Connections
+AUTH_CACHE_DB_CONNECTION='etg_utf8'
+
 # Firebird Database
 ETG_DB_HOST=your-firebird-server
 ETG_DB_PORT=3050
@@ -312,7 +315,7 @@ Schedule::job(new WarmAllActiveTokensJob())
 ### TTL Configuration
 
 - **User Cache**: 6 hours
-- **Token Cache**: 12 hours  
+- **Token Cache**: 12 hours
 - **API Access**: 24 hours
 - **API Slug**: 24 hours
 
@@ -325,21 +328,25 @@ Schedule::job(new WarmAllActiveTokensJob())
 ## Architecture
 
 ### Models
+
 - `User` - Enhanced Laravel user model with Firebird support
 - `PersonalAccessToken` - Cached Sanctum token model
 - `EtgApi` - API configuration model
 - `EtgApiUser` - User API access permissions
 
 ### Services
+
 - `TokenCacheService` - Core caching logic with warming/invalidation
 
 ### Jobs
+
 - `WarmUserCacheJob` - Cache warming for specific users
 - `WarmAllActiveTokensJob` - Bulk token cache warming
 - `InvalidateExpiredTokensJob` - Cleanup expired tokens
 - `InvalidateUserCacheJob` - User data invalidation
 
 ### Middleware
+
 - `CachedSanctumAuth` - High-performance authentication
 - `CheckCachedEtgApiAccess` - API access validation
 
@@ -362,7 +369,7 @@ php artisan tinker
 >>> exit
 
 # 4. Test token model
-php artisan tinker 
+php artisan tinker
 >>> ItDelmax\AuthCache\Models\PersonalAccessToken::count()
 >>> exit
 
@@ -400,5 +407,6 @@ MIT License
 ## Support
 
 For issues and questions:
+
 - GitHub: https://github.com/it-delmax/auth-cache
 - Email: it@delmax.rs

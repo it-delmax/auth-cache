@@ -26,6 +26,15 @@ class User extends Authenticatable implements MustVerifyEmail
   protected $table = 'USERS_VIEW';
   protected $primaryKey = 'user_id';
 
+  public function __construct(array $attributes = [])
+  {
+    parent::__construct($attributes);
+
+    $this->connection = config('auth_cache.connection') ?: parent::getConnection();
+
+    $this->table = config('auth_cache.tables.users') ?: parent::getTable();
+  }
+
   protected $fillable = [
     'name',
     'email',

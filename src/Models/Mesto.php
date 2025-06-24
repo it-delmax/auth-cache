@@ -17,4 +17,11 @@ class Mesto extends Model
   protected $primaryKey = 'MESTO_ID';
 
   public $incrementing = false;
+
+  public function __construct(array $attributes = [])
+  {
+    parent::__construct($attributes);
+
+    $this->connection = config('auth_cache.connection') ?: parent::getConnection();
+  }
 }

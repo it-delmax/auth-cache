@@ -27,6 +27,13 @@ class BranchPartnerAccess extends Model
     'UPDATED_AT',
   ];
 
+  public function __construct(array $attributes = [])
+  {
+    parent::__construct($attributes);
+
+    $this->connection = config('auth_cache.connection') ?: parent::getConnection();
+  }
+
   public function branch(): BelongsTo
   {
     return $this->belongsTo(Branch::class, 'BRANCH_ID', 'BRANCH_ID');

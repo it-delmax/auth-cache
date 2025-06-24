@@ -16,4 +16,11 @@ class HrUposljeniRadnoMesto extends Model
   protected $primaryKey = 'HR_UPOSLJENI_RADNO_MESTO_ID';
 
   public $incrementing = false;
+
+  public function __construct(array $attributes = [])
+  {
+    parent::__construct($attributes);
+
+    $this->connection = config('auth_cache.connection') ?: parent::getConnection();
+  }
 }

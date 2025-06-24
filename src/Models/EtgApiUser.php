@@ -32,6 +32,14 @@ class EtgApiUser extends Model
     'EXPIRES_AT' => 'datetime'
   ];
 
+  public function __construct(array $attributes = [])
+  {
+    parent::__construct($attributes);
+
+    $this->connection = config('auth_cache.connection') ?: parent::getConnection();
+    $this->table = config('auth_cache.tables.api_users') ?: parent::getTable();
+  }
+
   public function api(): BelongsTo
   {
     return $this->belongsTo(EtgApi::class, 'API_ID', 'ID');

@@ -22,6 +22,13 @@ class Partner extends Model
 
   public $incrementing = false;
 
+  public function __construct(array $attributes = [])
+  {
+    parent::__construct($attributes);
+
+    $this->connection = config('auth_cache.connection') ?: parent::getConnection();
+  }
+
   public function preduzece(): BelongsTo
   {
     return $this->belongsTo(Preduzece::class, 'PREDUZECE_ID', 'PREDUZECE_ID');

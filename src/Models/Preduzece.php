@@ -18,4 +18,11 @@ class Preduzece extends Model
   protected $primaryKey = 'PREDUZECE_ID';
 
   protected $keyType = 'string';
+
+  public function __construct(array $attributes = [])
+  {
+    parent::__construct($attributes);
+
+    $this->connection = config('auth_cache.connection') ?: parent::getConnection();
+  }
 }

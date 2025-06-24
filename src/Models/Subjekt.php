@@ -22,6 +22,12 @@ class Subjekt extends Model
 
   public $incrementing = false;
 
+  public function __construct(array $attributes = [])
+  {
+    parent::__construct($attributes);
+
+    $this->connection = config('auth_cache.connection') ?: parent::getConnection();
+  }
 
   public function scopeAktivan($query): void
   {

@@ -35,6 +35,14 @@ class EtgApi extends Model
     'RATE_LIMIT_PER_MINUTE' => 'integer'
   ];
 
+  public function __construct(array $attributes = [])
+  {
+    parent::__construct($attributes);
+
+    $this->connection = config('auth_cache.connection') ?: parent::getConnection();
+    $this->table = config('auth_cache.tables.api_users') ?: parent::getTable();
+  }
+
   public function apiUsers(): HasMany
   {
     return $this->hasMany(EtgApiUser::class, 'API_ID', 'ID');
