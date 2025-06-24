@@ -4,8 +4,7 @@ namespace ItDelmax\AuthCache\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
-use ItDelmax\AuthCache\Models\User;
-use ItDelmax\AuthCache\Passwords\CustomPasswordBrokerManager;
+use ItDelmax\AuthCache\Passwords\DelmaxPasswordBrokerManager;
 use ItDelmax\AuthCache\Services\TokenCacheService;
 use ItDelmax\AuthCache\Providers\CacheEloquentUserProvider;
 
@@ -17,7 +16,7 @@ class AuthServiceProvider extends ServiceProvider
   public function register(): void
   {
     $this->app->singleton('auth.password', function ($app) {
-      return new CustomPasswordBrokerManager($app);
+      return new DelmaxPasswordBrokerManager($app);
     });
   }
 

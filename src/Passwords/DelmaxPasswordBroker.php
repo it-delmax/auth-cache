@@ -5,7 +5,7 @@ namespace ItDelmax\AuthCache\Passwords;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Support\Facades\DB;
 
-class CustomPasswordBroker extends PasswordBroker
+class DelmaxPasswordBroker extends PasswordBroker
 {
   protected function createToken($user)
   {
