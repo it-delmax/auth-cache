@@ -5,6 +5,8 @@ namespace ItDelmax\AuthCache\Providers;
 use Illuminate\Support\ServiceProvider;
 use ItDelmax\AuthCache\Services\TokenCacheService;
 use ItDelmax\AuthCache\Passwords\DelmaxPasswordBrokerManager;
+use ItDelmax\AuthCache\Providers\AuthServiceProvider;
+use ItDelmax\AuthCache\Providers\CacheEloquentUserProvider;
 
 class AuthCacheServiceProvider extends ServiceProvider
 {
@@ -35,7 +37,7 @@ class AuthCacheServiceProvider extends ServiceProvider
   public function boot(): void
   {
     // Register AuthServiceProvider
-    $this->app->register(\ItDelmax\AuthCache\Providers\AuthServiceProvider::class);
+    $this->app->register(AuthServiceProvider::class);
 
     Auth::provider('cache-eloquent', function ($app, array $config) {
       return new CacheEloquentUserProvider(
