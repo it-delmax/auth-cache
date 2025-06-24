@@ -1,6 +1,6 @@
 <?php
 
-use ItDelmax\AuthCache\Models;
+namespace ItDelmax\AuthCache\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ItDelmax\AuthCache\Models\Subjekt;

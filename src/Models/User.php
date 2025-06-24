@@ -79,7 +79,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
   public function accountType(): BelongsTo
   {
-    return $this->belongsTo(AccountType::class, 'account_type_id');
+    return $this->belongsTo(AccountType::class, 'account_type_id', 'ID')
+      ->withDefault([
+        'NAME' => 'Unknown',
+      ]);
   }
 
   public function uposljeni(): BelongsTo
