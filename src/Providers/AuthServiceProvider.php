@@ -15,9 +15,9 @@ class AuthServiceProvider extends ServiceProvider
    */
   public function register(): void
   {
-    $this->app->singleton('auth.password', function ($app) {
-      return new DelmaxPasswordBrokerManager($app);
-    });
+    // $this->app->singleton('auth.password', function ($app) {
+    //   return new DelmaxPasswordBrokerManager($app);
+    // });
   }
 
   /**

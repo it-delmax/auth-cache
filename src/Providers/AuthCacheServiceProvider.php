@@ -35,7 +35,7 @@ class AuthCacheServiceProvider extends ServiceProvider
   public function boot(): void
   {
     // Register AuthServiceProvider
-    //$this->app->register(\ItDelmax\AuthCache\Providers\AuthServiceProvider::class);
+    $this->app->register(\ItDelmax\AuthCache\Providers\AuthServiceProvider::class);
 
     Auth::provider('cache-eloquent', function ($app, array $config) {
       return new CacheEloquentUserProvider(
