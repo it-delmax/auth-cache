@@ -25,6 +25,7 @@ class EtgApi extends Model
     'DOCS_URL',
     'GUARD_NAME',
     'IS_ACTIVE',
+    'TTL',
     'RATE_LIMIT_PER_MINUTE',
     'REQUIRES_APPROVAL'
   ];
