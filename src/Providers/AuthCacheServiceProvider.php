@@ -7,6 +7,7 @@ use ItDelmax\AuthCache\Services\TokenCacheService;
 use ItDelmax\AuthCache\Passwords\DelmaxPasswordBrokerManager;
 use ItDelmax\AuthCache\Providers\AuthServiceProvider;
 use ItDelmax\AuthCache\Providers\CacheEloquentUserProvider;
+use Illuminate\Support\Facades\Auth;
 
 class AuthCacheServiceProvider extends ServiceProvider
 {
