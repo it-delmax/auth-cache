@@ -21,7 +21,7 @@ class AccountType extends Model
   {
     parent::__construct($attributes);
 
-    $this->connection = config('auth_cache.connection') ?: parent::getConnection();
+    $this->connection = config('auth_cache.connection') ?: parent::getConnectionName();
   }
 
   public function users()
