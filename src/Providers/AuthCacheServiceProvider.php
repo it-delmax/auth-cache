@@ -21,9 +21,6 @@ class AuthCacheServiceProvider extends ServiceProvider
       return new TokenCacheService();
     });
 
-    $this->app->singleton('auth.password', function ($app) {
-      return new DelmaxPasswordBrokerManager($app);
-    });
 
     // Merge config
     $this->mergeConfigFrom(
