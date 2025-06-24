@@ -18,4 +18,9 @@ class DelmaxPasswordBrokerManager extends PasswordBrokerManager implements Passw
       $this->app['auth']->createUserProvider($config['provider'])
     );
   }
+
+  public function getDefaultDriver()
+  {
+    return $this->app['config']['auth.defaults.passwords'];
+  }
 }
