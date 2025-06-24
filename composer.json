@@ -1,53 +1,54 @@
 {
-    "name": "it-delmax/auth-cache",
-    "description": "Delmax Authentication and Cache Management Package for Laravel",
-    "type": "library",
-    "license": "MIT",
-    "homepage": "https://github.com/it-delmax/auth-cache",
-    "authors": [
-        {
-            "name": "Nikola Marcic",
-            "email": "it@delmax.rs"
-        },
-        {
-            "name": "Claude (Anthropic AI)",
-            "email": "it@delmax.rs"
-        },
-        {
-            "name": "Delmax IT Team",
-            "email": "it@delmax.rs"
-        }
-    ],
-    "require": {
-        "php": "^8.2|^8.3|^8.4",
-        "laravel/framework": "^11.0|^12.0",
-        "laravel/sanctum": "^4.0|^5.0"
+  "name": "it-delmax/auth-cache",
+  "description": "Delmax Authentication and Cache Management Package for Laravel",
+  "type": "library",
+  "license": "MIT",
+  "homepage": "https://github.com/it-delmax/auth-cache",
+  "authors": [
+    {
+      "name": "Nikola Marcic",
+      "email": "it@delmax.rs"
     },
-    "require-dev": {
-        "phpunit/phpunit": "^10.0|^11.0",
-        "orchestra/testbench": "^9.0|^10.0"
+    {
+      "name": "Claude (Anthropic AI)",
+      "email": "it@delmax.rs"
     },
-    "autoload": {
-        "psr-4": {
-            "ItDelmax\\AuthCache\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "ItDelmax\\AuthCache\\Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "ItDelmax\\AuthCache\\Providers\\AuthCacheServiceProvider"
-            ]
-        }
-    },
-    "support": {
-        "issues": "https://github.com/it-delmax/auth-cache/issues",
-        "source": "https://github.com/it-delmax/auth-cache"
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    {
+      "name": "Delmax IT Team",
+      "email": "it@delmax.rs"
+    }
+  ],
+  "require": {
+    "php": "^8.2|^8.3|^8.4",
+    "laravel/framework": "^11.0|^12.0",
+    "laravel/sanctum": "^4.0|^5.0",
+    "spatie/laravel-permission": "^6.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.0|^11.0",
+    "orchestra/testbench": "^9.0|^10.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "ItDelmax\\AuthCache\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ItDelmax\\AuthCache\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "ItDelmax\\AuthCache\\Providers\\AuthCacheServiceProvider"
+      ]
+    }
+  },
+  "support": {
+    "issues": "https://github.com/it-delmax/auth-cache/issues",
+    "source": "https://github.com/it-delmax/auth-cache"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }

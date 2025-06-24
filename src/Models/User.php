@@ -16,11 +16,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-  use HasFactory, Notifiable, HasApiTokens, CachesRelationships;
+  use HasFactory, Notifiable, HasApiTokens, CachesRelationships, HasRoles, HasPermissions;
 
   protected $connection = 'etg_utf8';
   protected $table = 'USERS_VIEW';
@@ -178,5 +179,10 @@ class User extends Authenticatable implements MustVerifyEmail
   public function resolvedPartner(): ?Partner
   {
     return $this->isPartner() ? $this->partner : null;
+  }
+
+  public function isBranch(): bool
+  {
+    return $this->account_type_id === 2;
   }
 }
