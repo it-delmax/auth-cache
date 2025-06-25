@@ -5,6 +5,8 @@ namespace ItDelmax\AuthCache\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ItDelmax\AuthCache\Models\Subjekt;
 use ItDelmax\AuthCache\Models\Preduzece;
+use ItDelmax\AuthCache\Models\BranchPartnerAccess;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -37,5 +39,10 @@ class Partner extends Model
   public function subjekt(): BelongsTo
   {
     return $this->belongsTo(Subjekt::class, 'SUBJEKT_ID', 'PARTNER_ID');
+  }
+
+  public function branchAccess(): HasMany
+  {
+    return $this->hasMany(BranchPartnerAccess::class, 'PARTNER_ID', 'PARTNER_ID');
   }
 }
