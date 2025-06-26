@@ -11,6 +11,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BranchPartnerAccess extends Model
 {
+
+  const CREATED_AT = 'CREATED_AT';
+  const UPDATED_AT = 'UPDATED_AT';
+
   protected $connection = 'etg';
 
   protected $table = 'BRANCH_PARTNER_ACCESS';
@@ -18,13 +22,12 @@ class BranchPartnerAccess extends Model
   protected $primaryKey = 'ID';
 
   protected $fillable = [
+    'COMPANY_ID',
     'BRANCH_ID',
     'PARTNER_ID',
     'IS_ACTIVE',
     'PRIORITY',
-    'BRANCH_ACCESS_TYPE_ID',
-    'CREATED_AT',
-    'UPDATED_AT',
+    'BRANCH_ACCESS_TYPE_ID'
   ];
 
   public function __construct(array $attributes = [])
@@ -46,6 +49,6 @@ class BranchPartnerAccess extends Model
 
   public function accessType(): BelongsTo
   {
-    return $this->belongsTo(BranchAccessType::class, 'ID', 'BRANCH_ACCESS_TYPE_ID');
+    return $this->belongsTo(BranchAccessType::class, 'BRANCH_ACCESS_TYPE_ID', 'ID');
   }
 }

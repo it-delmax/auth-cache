@@ -331,8 +331,8 @@ Schedule::job(new WarmAllActiveTokensJob())
 
 - `User` - Enhanced Laravel user model with Firebird support
 - `PersonalAccessToken` - Cached Sanctum token model
-- `EtgApi` - API configuration model
-- `EtgApiUser` - User API access permissions
+- `DmxApi` - API configuration model
+- `DmxApiUser` - User API access permissions
 
 ### Services
 
@@ -348,7 +348,7 @@ Schedule::job(new WarmAllActiveTokensJob())
 ### Middleware
 
 - `CachedSanctumAuth` - High-performance authentication
-- `CheckCachedEtgApiAccess` - API access validation
+- `CheckCachedDmxApiAccess` - API access validation
 
 ## Setup Checklist
 

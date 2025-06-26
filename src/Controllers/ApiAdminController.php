@@ -5,8 +5,8 @@ namespace ItDelmax\AuthCache\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use ItDelmax\AuthCache\Models\EtgApi;
-use ItDelmax\AuthCache\Models\EtgApiUser;
+use ItDelmax\AuthCache\Models\DmxApi;
+use ItDelmax\AuthCache\Models\DmxApiUser;
 use ItDelmax\AuthCache\Models\User;
 use ItDelmax\AuthCache\Services\TokenCacheService;
 use Illuminate\Support\Facades\Log;
@@ -25,17 +25,17 @@ class ApiAdminController extends Controller
     {
         try {
             $stats = [
-                'total_apis' => EtgApi::count(),
-                'active_apis' => EtgApi::where('IS_ACTIVE', 1)->count(),
+                'total_apis' => DmxApi::count(),
+                'active_apis' => DmxApi::where('IS_ACTIVE', 1)->count(),
                 'total_users' => User::count(),
-                'users_with_api_access' => EtgApiUser::distinct('USER_ID')->count(),
-                'active_api_grants' => EtgApiUser::where('IS_ACTIVE', 1)->count(),
-                'expired_grants' => EtgApiUser::where('EXPIRES_AT', '<', now())->count(),
+                'users_with_api_access' => DmxApiUser::distinct('USER_ID')->count(),
+                'active_api_grants' => DmxApiUser::where('IS_ACTIVE', 1)->count(),
+                'expired_grants' => DmxApiUser::where('EXPIRES_AT', '<', now())->count(),
                 'cache_stats' => $this->cacheService->getCacheStats()
             ];
 
             // API usage breakdown
-            $apiUsage = EtgApi::withCount(['apiUsers' => function ($query) {
+            $apiUsage = DmxApi::withCount(['apiUsers' => function ($query) {
                 $query->where('IS_ACTIVE', 1);
             }])->get(['API_ID', 'NAME', 'SLUG']);
 
@@ -59,21 +59,21 @@ class ApiAdminController extends Controller
     {
         $request->validate([
             'user_id' => 'required|integer|exists:USERS_VIEW,user_id',
-            'api_slug' => 'required|string|exists:ETG_API,SLUG',
+            'api_slug' => 'required|string|exists:DMX_API,SLUG',
             'expires_at' => 'nullable|date|after:now',
             'note' => 'nullable|string|max:500'
         ]);
 
         try {
             $user = User::find($request->user_id);
-            $api = EtgApi::where('SLUG', $request->api_slug)->where('IS_ACTIVE', 1)->first();
+            $api = DmxApi::where('SLUG', $request->api_slug)->where('IS_ACTIVE', 1)->first();
 
             if (!$api) {
                 return response()->json(['error' => 'API not found or inactive'], 404);
             }
 
             // Check if access already exists
-            $existingAccess = EtgApiUser::where('USER_ID', $request->user_id)
+            $existingAccess = DmxApiUser::where('USER_ID', $request->user_id)
                 ->where('API_ID', $api->API_ID)
                 ->where('IS_ACTIVE', 1)
                 ->first();
@@ -83,7 +83,7 @@ class ApiAdminController extends Controller
             }
 
             // Grant access
-            $access = EtgApiUser::create([
+            $access = DmxApiUser::create([
                 'USER_ID' => $request->user_id,
                 'API_ID' => $api->API_ID,
                 'IS_ACTIVE' => 1,
@@ -110,7 +110,6 @@ class ApiAdminController extends Controller
                 'api_slug' => $request->api_slug,
                 'expires_at' => $request->expires_at
             ], 201);
-
         } catch (\Exception $e) {
             Log::error("Failed to grant API access: " . $e->getMessage());
             return response()->json(['error' => 'Failed to grant access'], 500);
@@ -126,12 +125,12 @@ class ApiAdminController extends Controller
         ]);
 
         try {
-            $api = EtgApi::where('SLUG', $request->api_slug)->first();
+            $api = DmxApi::where('SLUG', $request->api_slug)->first();
             if (!$api) {
                 return response()->json(['error' => 'API not found'], 404);
             }
 
-            $access = EtgApiUser::where('USER_ID', $request->user_id)
+            $access = DmxApiUser::where('USER_ID', $request->user_id)
                 ->where('API_ID', $api->API_ID)
                 ->where('IS_ACTIVE', 1)
                 ->first();
@@ -163,7 +162,6 @@ class ApiAdminController extends Controller
                 'user_id' => $request->user_id,
                 'api_slug' => $request->api_slug
             ]);
-
         } catch (\Exception $e) {
             Log::error("Failed to revoke API access: " . $e->getMessage());
             return response()->json(['error' => 'Failed to revoke access'], 500);
@@ -180,7 +178,7 @@ class ApiAdminController extends Controller
         $expiringDate = now()->addDays($days);
 
         try {
-            $expiringAccess = EtgApiUser::with(['user', 'api'])
+            $expiringAccess = DmxApiUser::with(['user', 'api'])
                 ->where('IS_ACTIVE', 1)
                 ->where('EXPIRES_AT', '<=', $expiringDate)
                 ->where('EXPIRES_AT', '>', now())
@@ -205,7 +203,6 @@ class ApiAdminController extends Controller
                 'total_count' => $result->count(),
                 'days_filter' => $days
             ]);
-
         } catch (\Exception $e) {
             Log::error("Failed to get expiring access: " . $e->getMessage());
             return response()->json(['error' => 'Failed to retrieve expiring access'], 500);
@@ -216,7 +213,7 @@ class ApiAdminController extends Controller
     {
         $request->validate([
             'access_ids' => 'required|array|min:1',
-            'access_ids.*' => 'integer|exists:ETG_API_USERS,API_USER_ID',
+            'access_ids.*' => 'integer|exists:DMX_API_USERS,API_USER_ID',
             'extend_days' => 'required|integer|min:1|max:365',
             'note' => 'nullable|string|max:500'
         ]);
@@ -227,9 +224,9 @@ class ApiAdminController extends Controller
 
             DB::transaction(function () use ($request, &$updated, &$userIds) {
                 foreach ($request->access_ids as $accessId) {
-                    $access = EtgApiUser::find($accessId);
+                    $access = DmxApiUser::find($accessId);
                     if ($access && $access->IS_ACTIVE) {
-                        $newExpiryDate = ($access->EXPIRES_AT ? 
+                        $newExpiryDate = ($access->EXPIRES_AT ?
                             now()->parse($access->EXPIRES_AT) : now())
                             ->addDays($request->extend_days);
 
@@ -262,7 +259,6 @@ class ApiAdminController extends Controller
                 'extended_count' => $updated,
                 'extend_days' => $request->extend_days
             ]);
-
         } catch (\Exception $e) {
             Log::error("Failed to bulk extend access: " . $e->getMessage());
             return response()->json(['error' => 'Failed to extend access'], 500);

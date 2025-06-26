@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use ItDelmax\AuthCache\Models\PersonalAccessToken;
-use ItDelmax\AuthCache\Models\EtgApi;
-use ItDelmax\AuthCache\Models\EtgApiUser;
+use ItDelmax\AuthCache\Models\DmxApi;
+use ItDelmax\AuthCache\Models\DmxApiUser;
 use ItDelmax\AuthCache\Services\TokenCacheService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -79,7 +79,7 @@ class TokenManagementController extends Controller
 
         // Invalidate from cache
         $this->cacheService->invalidateToken($token->token);
-        
+
         // Delete from database
         $token->delete();
 
@@ -127,19 +127,19 @@ class TokenManagementController extends Controller
     public function requestApiAccess(Request $request): JsonResponse
     {
         $request->validate([
-            'api_slug' => 'required|string|exists:ETG_API,SLUG',
+            'api_slug' => 'required|string|exists:DMX_API,SLUG',
             'reason' => 'required|string|max:500'
         ]);
 
         $user = Auth::user();
-        $api = EtgApi::where('SLUG', $request->api_slug)->where('IS_ACTIVE', 1)->first();
+        $api = DmxApi::where('SLUG', $request->api_slug)->where('IS_ACTIVE', 1)->first();
 
         if (!$api) {
             return response()->json(['error' => 'API not found or inactive'], 404);
         }
 
         // Check if access already exists
-        $existingAccess = EtgApiUser::where('USER_ID', $user->user_id)
+        $existingAccess = DmxApiUser::where('USER_ID', $user->user_id)
             ->where('API_ID', $api->API_ID)
             ->where('IS_ACTIVE', 1)
             ->first();
@@ -164,7 +164,7 @@ class TokenManagementController extends Controller
     public function getAvailableApis(Request $request): JsonResponse
     {
         $user = Auth::user();
-        $availableApis = EtgApi::where('IS_ACTIVE', 1)->get(['API_ID', 'NAME', 'SLUG', 'DESCRIPTION']);
+        $availableApis = DmxApi::where('IS_ACTIVE', 1)->get(['API_ID', 'NAME', 'SLUG', 'DESCRIPTION']);
         $userApis = $user->getAccessibleApis()->pluck('API_ID')->toArray();
 
         $apis = $availableApis->map(function ($api) use ($userApis) {

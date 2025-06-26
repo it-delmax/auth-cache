@@ -59,8 +59,8 @@ return [
   'tables' => [
     'users' => env('AUTH_CACHE_USERS_TABLE', 'USERS_VIEW'),
     'tokens' => env('AUTH_CACHE_TOKENS_TABLE', 'personal_access_tokens'),
-    'apis' => env('AUTH_CACHE_APIS_TABLE', 'ETG_API'),
-    'api_users' => env('AUTH_CACHE_API_USERS_TABLE', 'ETG_API_USERS'),
+    'apis' => env('AUTH_CACHE_APIS_TABLE', 'DMX_API'),
+    'api_users' => env('AUTH_CACHE_API_USERS_TABLE', 'DMX_API_USERS'),
   ],
 
   /*

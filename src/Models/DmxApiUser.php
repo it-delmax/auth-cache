@@ -4,32 +4,40 @@ namespace ItDelmax\AuthCache\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use ItDelmax\AuthCache\Models\EtgApi;
+use ItDelmax\AuthCache\Models\DmxApi;
 use ItDelmax\AuthCache\Models\User;
 
-class EtgApiUser extends Model
+class DmxApiUser extends Model
 {
   const CREATED_AT = 'CREATED_AT';
   const UPDATED_AT = 'UPDATED_AT';
 
   protected $connection = 'etg_utf8';
-  protected $table = 'ETG_API_USERS';
+  protected $table = 'DMX_API_USERS';
   protected $primaryKey = 'ID';
-  protected $sequence = 'SEQ_ETG_API_USERS';
+  protected $sequence = 'SEQ_DMX_API_USERS';
 
   protected $fillable = [
     'API_ID',
+    'ABIILITIES',
     'USER_ID',
     'IS_ACTIVE',
     'APPROVED_AT',
     'APPROVED_BY',
-    'EXPIRES_AT'
+    'EXPIRES_AT',
+    'RATE_LIMIT_PER_MINUTE',
+
   ];
 
   protected $casts = [
     'IS_ACTIVE' => 'boolean',
+    'ABIILITIES' => 'array',
+    'APPROVED_BY' => 'integer',
     'APPROVED_AT' => 'datetime',
-    'EXPIRES_AT' => 'datetime'
+    'EXPIRES_AT' => 'datetime',
+    'CREATED_AT' => 'datetime',
+    'UPDATED_AT' => 'datetime',
+    'RATE_LIMIT_PER_MINUTE' => 'integer'
   ];
 
   public function __construct(array $attributes = [])
@@ -42,7 +50,7 @@ class EtgApiUser extends Model
 
   public function api(): BelongsTo
   {
-    return $this->belongsTo(EtgApi::class, 'API_ID', 'ID');
+    return $this->belongsTo(DmxApi::class, 'API_ID', 'ID');
   }
 
   public function user(): BelongsTo
@@ -102,5 +110,15 @@ class EtgApiUser extends Model
     }
 
     return now()->diffInDays($this->EXPIRES_AT, false);
+  }
+
+  public function isApproved()
+  {
+    return $this->IS_ACTIVE && $this->APPROVED_AT && (!$this->EXPIRES_AT || $this->EXPIRES_AT->isFuture());
+  }
+
+  public function effectiveAbilities()
+  {
+    return $this->ABILITIES ?: $this->api->DEFAULT_ABILITIES;
   }
 }

@@ -2,11 +2,11 @@
 
 namespace ItDelmax\AuthCache\Services;
 
-use ItDelmax\AuthCache\Models\EtgApi;
+use ItDelmax\AuthCache\Models\DmxApi;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use ItDelmax\AuthCache\Models\PersonalAccessToken;
-use ItDelmax\AuthCache\Models\EtgApiUser;
+use ItDelmax\AuthCache\Models\DmxApiUser;
 use ItDelmax\AuthCache\Models\User;
 
 class TokenCacheService
@@ -57,7 +57,7 @@ class TokenCacheService
 
     public function cacheUserApiAccess(int $userId): void
     {
-        $access = EtgApiUser::where('USER_ID', $userId)->active()->notExpired()->get();
+        $access = DmxApiUser::where('USER_ID', $userId)->active()->notExpired()->get();
 
         $prefix = config('auth-cache.prefixes.api_access', 'api_access:');
         Cache::put("{$prefix}{$userId}", $access, $this->apiAccessTTL);
@@ -79,7 +79,7 @@ class TokenCacheService
     {
         $prefix = config('auth-cache.prefixes.api_slug', 'api_slug:');
         return Cache::remember("{$prefix}{$slug}", $this->apiSlugTTL, function () use ($slug) {
-            return EtgApi::active()->bySlug($slug)->first();
+            return DmxApi::active()->bySlug($slug)->first();
         });
     }
 
@@ -166,7 +166,7 @@ class TokenCacheService
     {
         $this->invalidateUser($userId);
         $this->invalidateUserAccess($userId);
-        
+
         // Invalidate all user tokens
         try {
             PersonalAccessToken::where('tokenable_id', $userId)
@@ -186,7 +186,7 @@ class TokenCacheService
         $count = 0;
         try {
             $expiredTokens = PersonalAccessToken::where('expires_at', '<', now())->get();
-            
+
             foreach ($expiredTokens as $token) {
                 $this->invalidateToken($token->token);
                 $count++;

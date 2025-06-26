@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class EtgApi extends Model
+class DmxApi extends Model
 {
   const CREATED_AT = 'CREATED_AT';
   const UPDATED_AT = 'UPDATED_AT';
 
   protected $connection = 'etg_utf8';
-  protected $table = 'ETG_APIS';
+  protected $table = 'DMX_APIS';
   protected $primaryKey = 'ID';
-  protected $sequence = 'SEQ_ETG_APIS';
+  protected $sequence = 'SEQ_DMX_APIS';
 
   protected $fillable = [
     'NAME',
@@ -25,15 +25,21 @@ class EtgApi extends Model
     'DOCS_URL',
     'GUARD_NAME',
     'IS_ACTIVE',
-    'TTL',
-    'RATE_LIMIT_PER_MINUTE',
+    'CACHED_TOKEN_TTL_MINUTES',
+    'GLOBAL_RATE_LIMIT_PER_MINUTE',
+    'USER_RATE_LIMIT_PER_MINUTE',
     'REQUIRES_APPROVAL'
   ];
 
   protected $casts = [
     'IS_ACTIVE' => 'boolean',
+    'DEFAULT_ABILITIES' => 'array',
     'REQUIRES_APPROVAL' => 'boolean',
-    'RATE_LIMIT_PER_MINUTE' => 'integer'
+    'GLOBAL_RATE_LIMIT_PER_MINUTE' => 'integer',
+    'USER_RATE_LIMIT_PER_MINUTE' => 'integer',
+    'CACHED_TOKEN_TTL_MINUTES' => 'integer',
+    'CREATED_AT' => 'datetime',
+    'UPDATED_AT' => 'datetime',
   ];
 
   public function __construct(array $attributes = [])
@@ -46,12 +52,12 @@ class EtgApi extends Model
 
   public function apiUsers(): HasMany
   {
-    return $this->hasMany(EtgApiUser::class, 'API_ID', 'ID');
+    return $this->hasMany(DmxApiUser::class, 'API_ID', 'ID');
   }
 
   public function activeApiUsers(): HasMany
   {
-    return $this->hasMany(EtgApiUser::class, 'API_ID', 'ID')
+    return $this->hasMany(DmxApiUser::class, 'API_ID', 'ID')
       ->where('IS_ACTIVE', 1)
       ->where(function ($query) {
         $query->whereNull('EXPIRES_AT')
