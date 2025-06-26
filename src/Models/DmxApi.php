@@ -5,9 +5,12 @@ namespace ItDelmax\AuthCache\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use ItDelmax\AuthCache\Models\Traits\RecordsUserActivity;
 
 class DmxApi extends Model
 {
+  use RecordsUserActivity;
+
   const CREATED_AT = 'CREATED_AT';
   const UPDATED_AT = 'UPDATED_AT';
 

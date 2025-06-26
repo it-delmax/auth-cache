@@ -4,11 +4,15 @@ namespace ItDelmax\AuthCache\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use ItDelmax\AuthCache\Models\DmxApi;
+use ItDelmax\AuthCache\Models\Traits\RecordsUserActivity;
 use ItDelmax\AuthCache\Models\User;
 
 class DmxApiUser extends Model
 {
+  use RecordsUserActivity;
+
   const CREATED_AT = 'CREATED_AT';
   const UPDATED_AT = 'UPDATED_AT';
 
@@ -120,5 +124,18 @@ class DmxApiUser extends Model
   public function effectiveAbilities()
   {
     return $this->ABILITIES ?: $this->api->DEFAULT_ABILITIES;
+  }
+
+  public function toogleRevoked()
+  {
+    $this->IS_ACTIVE = $this->IS_ACTIVE == 1 ? 0 : 1;
+    return $this->save();
+  }
+
+  public function markAsApproved()
+  {
+    $this->APPROVED_AT = now();
+    $this->APPROVED_BY = Auth::id();
+    return $this->save();
   }
 }
