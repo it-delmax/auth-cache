@@ -28,7 +28,8 @@ class DmxApi extends Model
     'CACHED_TOKEN_TTL_MINUTES',
     'GLOBAL_RATE_LIMIT_PER_MINUTE',
     'USER_RATE_LIMIT_PER_MINUTE',
-    'REQUIRES_APPROVAL'
+    'REQUIRES_APPROVAL',
+    'DEFAULT_ABILITIES'
   ];
 
   protected $casts = [
