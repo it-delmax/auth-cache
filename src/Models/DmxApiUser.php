@@ -23,7 +23,7 @@ class DmxApiUser extends Model
 
   protected $fillable = [
     'API_ID',
-    'ABIILITIES',
+    'ABILITIES',
     'USER_ID',
     'IS_ACTIVE',
     'APPROVED_AT',
@@ -35,7 +35,7 @@ class DmxApiUser extends Model
 
   protected $casts = [
     'IS_ACTIVE' => 'boolean',
-    'ABIILITIES' => 'array',
+    'ABILITIES' => 'array',
     'APPROVED_BY' => 'integer',
     'APPROVED_AT' => 'datetime',
     'EXPIRES_AT' => 'datetime',
