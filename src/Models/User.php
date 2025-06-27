@@ -6,8 +6,6 @@ use ItDelmax\AuthCache\Models\Branch;
 use ItDelmax\AuthCache\Models\Partner;
 use ItDelmax\AuthCache\Models\Uposljeni;
 use ItDelmax\AuthCache\Models\AccountType;
-use ItDelmax\AuthCache\Models\DmxApi;
-use ItDelmax\AuthCache\Models\DmxApiUser;
 use ItDelmax\AuthCache\Models\Traits\CachesRelationships;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,13 +13,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use ItDelmax\AuthCache\Models\Traits\DmxApiAccess;
+use ItDelmax\AuthCache\Models\Traits\DmxHasApiTokens;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-  use HasFactory, Notifiable, HasApiTokens, CachesRelationships, HasRoles, HasPermissions;
+  use HasFactory,
+    Notifiable,
+    HasApiTokens,
+    DmxApiAccess,
+    DmxHasApiTokens,
+    CachesRelationships,
+    HasRoles,
+    HasPermissions;
 
   protected $connection = 'etg_utf8';
   protected $table = 'USERS_VIEW';
@@ -60,7 +67,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
   protected $appends = ['full_name', 'subjekt_id', 'partner_id'];
 
-  /** ------------------- Accessors ------------------- **/
 
   public function getFullNameAttribute()
   {
@@ -105,33 +111,6 @@ class User extends Authenticatable implements MustVerifyEmail
     return $this->belongsTo(Partner::class, 'erp_id', 'PARTNER_ID');
   }
 
-  /** ------------------- API & Prava Pristupa ------------------- **/
-
-  public function apiAccess(): HasMany
-  {
-    return $this->hasMany(DmxApiUser::class, 'USER_ID', 'user_id')
-      ->where('IS_ACTIVE', 1)
-      ->where(function ($query) {
-        $query->whereNull('EXPIRES_AT')
-          ->orWhere('EXPIRES_AT', '>', now());
-      });
-  }
-
-  public function activeApiAccess(): HasMany
-  {
-    return $this->apiAccess(); // reuse
-  }
-
-  public function branchAccess(): HasMany
-  {
-    return $this->hasMany(Branch::class, 'USER_ID', 'user_id')
-      ->where('IS_ACTIVE', 1)
-      ->where(function ($query) {
-        $query->whereNull('EXPIRES_AT')
-          ->orWhere('EXPIRES_AT', '>', now());
-      });
-  }
-
   /** ------------------- Helper Metode ------------------- **/
 
   public function hasVerifiedEmail()
@@ -143,32 +122,6 @@ class User extends Authenticatable implements MustVerifyEmail
   {
     $this->email_verified_at = now();
     return $this->save();
-  }
-
-  public function hasApiAccess($apiSlug): bool
-  {
-    return $this->activeApiAccess()
-      ->whereHas('api', fn($q) => $q->where('SLUG', $apiSlug)->where('IS_ACTIVE', 1))
-      ->exists();
-  }
-
-  public function getAccessibleApis()
-  {
-    return DmxApi::whereHas('apiUsers', function ($query) {
-      $query->where('USER_ID', $this->user_id)
-        ->where('IS_ACTIVE', 1)
-        ->where(function ($q) {
-          $q->whereNull('EXPIRES_AT')
-            ->orWhere('EXPIRES_AT', '>', now());
-        });
-    })->where('IS_ACTIVE', 1)->get();
-  }
-
-  public function hasBranchAccess($branchId): bool
-  {
-    return $this->branchAccess()
-      ->where('BRANCH_ID', $branchId)
-      ->exists();
   }
 
   public function isPartner(): bool

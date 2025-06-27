@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class CheckApiTokenAccess
+class NoviCheckApiTokenAccess
 {
   public function handle(Request $request, Closure $next, ...$requiredAbilities)
   {
