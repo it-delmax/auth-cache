@@ -44,8 +44,15 @@ class AuthCacheServiceProvider extends ServiceProvider
         $app[TokenCacheService::class]
       );
     });
+    // view namespace
+    $this->loadViewsFrom(__DIR__ . '/../resources/views', 'auth-cache');
 
-    // Publish config
+
+    $this->publishes([
+      __DIR__ . '/../resources/views' => resource_path('views/vendor/your-package'),
+    ], 'auth-cache-views');
+
+
     $this->publishes([
       __DIR__ . '/../../config/auth-cache.php' => config_path('auth-cache.php'),
     ], 'auth-cache-config');
