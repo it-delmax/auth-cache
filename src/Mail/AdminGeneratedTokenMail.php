@@ -12,6 +12,7 @@ class AdminGeneratedTokenMail extends Mailable implements ShouldQueue
 {
   use Queueable, SerializesModels;
 
+
   public array $tokenData;
 
   public function __construct(array $tokenData)
