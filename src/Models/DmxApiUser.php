@@ -121,11 +121,6 @@ class DmxApiUser extends Model
     return $this->IS_ACTIVE && $this->APPROVED_AT && (!$this->EXPIRES_AT || $this->EXPIRES_AT->isFuture());
   }
 
-  public function effectiveAbilities()
-  {
-    return $this->ABILITIES ?: $this->api->DEFAULT_ABILITIES;
-  }
-
   public function toogleRevoked()
   {
     $this->IS_ACTIVE = $this->IS_ACTIVE == 1 ? 0 : 1;
