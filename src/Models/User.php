@@ -132,4 +132,18 @@ class User extends Authenticatable implements MustVerifyEmail
   {
     return $this->account_type_id === 2;
   }
+
+  /**
+   * Get user type name
+   */
+  public function getUserTypeName(): string
+  {
+    return match ($this->account_type_id) {
+      1 => 'Employee',
+      2 => 'Branch',
+      3 => 'Partner',
+      4 => 'External user',
+      default => 'Unknown',
+    };
+  }
 }
