@@ -6,6 +6,7 @@ use Laravel\Sanctum\DateTimeInterface;
 use Laravel\Sanctum\NewAccessToken;
 use Illuminate\Support\Str;
 use ItDelmax\AuthCache\Models\DmxApiUser;
+use ItDelmax\AuthCache\Services\TokenCacheService;
 
 trait DmxHasApiTokens
 {
@@ -15,7 +16,7 @@ trait DmxHasApiTokens
 
     /** @var NewAccessToken $token */
     $token = $this->createToken($tokenName, $abilities, $expiresAt);
-    $cache = app(new \ItDelmax\AuthCache\Services\TokenCacheService());
+    $cache = app(new TokenCacheService());
     $cache->cacheToken($token);
 
     return $token;

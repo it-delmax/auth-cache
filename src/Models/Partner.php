@@ -45,4 +45,11 @@ class Partner extends Model
   {
     return $this->hasMany(BranchPartnerAccess::class, 'PARTNER_ID', 'PARTNER_ID');
   }
+
+  public function users(): HasMany
+  {
+    return $this->hasMany(User::class, 'partner_id', 'PARTNER_ID')
+      ->where('active', 1)
+      ->where('account_type_id', 3);
+  }
 }

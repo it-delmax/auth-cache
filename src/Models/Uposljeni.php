@@ -3,6 +3,7 @@
 namespace ItDelmax\AuthCache\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ItDelmax\AuthCache\Models\HrUposljeniRadnoMesto;
 use ItDelmax\AuthCache\Models\BranchAccessType;
 
@@ -44,5 +45,10 @@ class Uposljeni extends Model
   public function scopeAktivan($query): void
   {
     $query->whereNull('DATUM_PRESTANKA_RADNOG_ODNOSA');
+  }
+
+  public function user(): BelongsTo
+  {
+    return $this->belongsTo(User::class, 'UPOSLJENI_ID', 'emplyee_id');
   }
 }

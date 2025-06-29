@@ -51,7 +51,10 @@ class User extends Authenticatable implements MustVerifyEmail
     'email_verified_at',
     'account_type_id',
     'password',
-    'erp_id',
+    'partner_id',
+    'employee_id',
+    'created_by',
+    'updated_by',
     'remember_token',
   ];
 
@@ -65,7 +68,7 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
   }
 
-  protected $appends = ['full_name', 'subjekt_id', 'partner_id'];
+  protected $appends = ['full_name', 'subjekt_id'];
 
 
   public function getFullNameAttribute()
@@ -75,20 +78,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
   public function getSubjektIdAttribute()
   {
-    if ($this->account_type_id !== 1) {
+    if ($this->account_type_id == 2) {
       return null;
     }
 
-    return $this->uposljeni?->SUBJEKT_ID;
-  }
-
-  public function getPartnerIdAttribute()
-  {
-    if ($this->account_type_id !== 3) {
-      return null;
-    }
-
-    return $this->partner?->PARTNER_ID;
+    return $this->partner_id;
   }
 
   /** ------------------- Relacije ------------------- **/
@@ -103,12 +97,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
   public function uposljeni(): BelongsTo
   {
-    return $this->belongsTo(Uposljeni::class, 'erp_id', 'UPOSLJENI_ID');
+    return $this->belongsTo(Uposljeni::class, 'employee_id', 'UPOSLJENI_ID');
   }
 
   public function partner(): BelongsTo
   {
-    return $this->belongsTo(Partner::class, 'erp_id', 'PARTNER_ID');
+    return $this->belongsTo(Partner::class, 'partner_id', 'PARTNER_ID');
   }
 
   /** ------------------- Helper Metode ------------------- **/
