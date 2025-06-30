@@ -193,7 +193,7 @@ class TokenCacheService
     $failed = 0;
 
     try {
-      User::chunk(100, function ($users) use (&$count, &$failed) {
+      User::chunk(500, function ($users) use (&$count, &$failed) {
         foreach ($users as $user) {
           try {
             $this->cacheUser($user);
@@ -217,7 +217,12 @@ class TokenCacheService
     ];
   }
 
-  public function warmUsersWithApiAccess(): array
+  /**
+   * Warms the cache for all active API users.
+   * This method retrieves all active users with API access, caches their data,
+   * @return array
+   */
+  public function warmApiUsers(): array
   {
     $count = 0;
     $failed = 0;
@@ -229,7 +234,7 @@ class TokenCacheService
         ->pluck('USER_ID');
 
       User::whereIn('user_id', $userIds)
-        ->chunk(100, function ($users) use (&$count, &$failed) {
+        ->chunk(500, function ($users) use (&$count, &$failed) {
           foreach ($users as $user) {
             try {
               $this->cacheUser($user);

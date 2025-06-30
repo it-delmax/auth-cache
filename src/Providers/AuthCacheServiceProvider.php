@@ -86,7 +86,12 @@ class AuthCacheServiceProvider extends ServiceProvider
 
         $schedule->job(new \ItDelmax\AuthCache\Jobs\WarmAllActiveTokensJob())
           ->everySixHours()
-          ->name('auth-cache:warm-all-tokens')
+          ->name('auth-cache:warm-all-active-tokens')
+          ->onOneServer();
+
+        $schedule->job(new \ItDelmax\AuthCache\Jobs\WarmAllActiveUsersJob())
+          ->everySixHours()
+          ->name('auth-cache:warm-all-active-users')
           ->onOneServer();
 
         $schedule->call(function () {
