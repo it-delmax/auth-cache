@@ -1,4 +1,3 @@
-
 <?php
 
 namespace ItDelmax\AuthCache\Jobs;
