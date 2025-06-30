@@ -27,7 +27,7 @@ class WarmAuthCache extends Command
 
     if ($this->option('api-users')) {
       $this->info('Warming API users cache...');
-      $result = $cacheService->warmUsersWithApiAccess();
+      $result = $cacheService->warmApiUsers();
       $this->info("✓ Cached {$result['users']} API users, {$result['failed']} failed");
     }
 
