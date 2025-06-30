@@ -5,7 +5,7 @@ namespace ItDelmax\AuthCache\Console\Commands;
 use Illuminate\Console\Command;
 use ItDelmax\AuthCache\Services\TokenCacheService;
 
-class InvalidateUserCache extends Command
+class InvalidateUserAuthCache extends Command
 {
   protected $signature = 'auth-cache:invalidate-user {userId : ID korisnika}';
   protected $description = 'Invalidate all cache for specific user';

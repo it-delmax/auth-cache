@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ItDelmax\AuthCache\Console\Commands\AuthCacheConfiguration;
 use ItDelmax\AuthCache\Console\Commands\ClearAuthCache;
-use ItDelmax\AuthCache\Console\Commands\InvalidateUserCache;
+use ItDelmax\AuthCache\Console\Commands\InvalidateUserAuthCache;
 use ItDelmax\AuthCache\Console\Commands\WarmAuthCache;
 use ItDelmax\AuthCache\Console\Commands\WarmUserAuthCache;
 
@@ -75,7 +75,7 @@ class AuthCacheServiceProvider extends ServiceProvider
         ClearAuthCache::class,
         AuthCacheConfiguration::class,
         WarmUserAuthCache::class,
-        InvalidateUserCache::class
+        InvalidateUserAuthCache::class
       ]);
       // ⏱️ Hook scheduling
       $this->app->afterResolving(Schedule::class, function (Schedule $schedule) {
