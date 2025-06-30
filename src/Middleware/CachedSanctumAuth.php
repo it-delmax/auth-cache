@@ -33,7 +33,7 @@ class CachedSanctumAuth
     if ($cachedToken) {
       $user = $cache->getCachedUser($cachedToken['user_id']);
       if (!$user) {
-        $user = User::with('partner')->find($cachedToken['user_id']);
+        $user = User::find($cachedToken['user_id']);
         if (!$user) {
           return response()->json(['message' => 'User not found'], 401);
         }
@@ -49,8 +49,7 @@ class CachedSanctumAuth
     if ($pat) {
       $cache->cacheToken($pat);
 
-      // 🧠 Bitno: eager-load partner
-      $user = User::with('partner')->find($pat->tokenable_id);
+      $user = User::find($pat->tokenable_id);
       if (!$user) {
         return response()->json(['message' => 'User not found'], 401);
       }

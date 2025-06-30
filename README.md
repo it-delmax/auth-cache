@@ -313,7 +313,7 @@ Koriscenje iz terminala:
 
 ```bash
 # Show cache configuration
-php artisan auth-cache:configuration
+php artisan auth-cache:config
 
 # Warm cache for specific user
 php artisan auth-cache:warm-user 123

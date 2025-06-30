@@ -7,7 +7,7 @@ use ItDelmax\AuthCache\Services\TokenCacheService;
 
 class AuthCacheConfiguration extends Command
 {
-  protected $signature = 'auth-cache:confguration';
+  protected $signature = 'auth-cache:config';
   protected $description = 'Show auth cache statistics';
 
   public function handle(): int
