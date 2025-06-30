@@ -2,15 +2,18 @@
 
 namespace ItDelmax\AuthCache\Services;
 
-use ItDelmax\AuthCache\Models\DmxApi;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Support\Facades\Log;
-use ItDelmax\AuthCache\Models\PersonalAccessToken;
+use Illuminate\Support\Facades\Cache;
+use ItDelmax\AuthCache\Models\DmxApi;
 use ItDelmax\AuthCache\Models\DmxApiUser;
+use ItDelmax\AuthCache\Models\PersonalAccessToken;
 use ItDelmax\AuthCache\Models\User;
 
 class TokenCacheService
 {
+  protected CacheRepository $cache;
+
   protected $userTTL;
   protected $tokenTTL;
   protected $apiAccessTTL;
@@ -18,24 +21,18 @@ class TokenCacheService
 
   public function __construct()
   {
+    $this->cache = Cache::store('auth_cache');
+
     $this->userTTL = config('auth-cache.ttl.user', 6 * 60 * 60);
     $this->tokenTTL = config('auth-cache.ttl.token', 12 * 60 * 60);
     $this->apiAccessTTL = config('auth-cache.ttl.api_access', 24 * 60 * 60);
     $this->apiSlugTTL = config('auth-cache.ttl.api_slug', 24 * 60 * 60);
   }
 
-  /**
-   * Cache keys prefixes
-   */
-  // const USER_KEY_PREFIX = 'sanctum:user:';
-  // const USER_EMAIL_KEY_PREFIX = 'sanctum:user:email:';
-  // const TOKEN_KEY_PREFIX = 'sanctum:token:';
-  // const USER_TOKENS_KEY_PREFIX = 'sanctum:user:tokens:';
-
   public function cacheToken(PersonalAccessToken $token): void
   {
     $prefix = config('auth-cache.prefixes.token', 'token:');
-    Cache::put("{$prefix}{$token->token}", [
+    $this->cache->put("{$prefix}{$token->token}", [
       'user_id' => $token->tokenable_id,
       'token_id' => $token->id,
       'abilities' => $token->abilities,
@@ -46,13 +43,13 @@ class TokenCacheService
   public function getCachedToken(string $tokenHash): ?array
   {
     $prefix = config('auth-cache.prefixes.token', 'token:');
-    return Cache::get("{$prefix}{$tokenHash}");
+    return $this->cache->get("{$prefix}{$tokenHash}");
   }
 
   public function invalidateToken(string $tokenHash): void
   {
     $prefix = config('auth-cache.prefixes.token', 'token:');
-    Cache::forget("{$prefix}{$tokenHash}");
+    $this->cache->forget("{$prefix}{$tokenHash}");
   }
 
   public function cacheUserApiAccess(int $userId): void
@@ -60,25 +57,25 @@ class TokenCacheService
     $access = DmxApiUser::where('USER_ID', $userId)->active()->notExpired()->get();
 
     $prefix = config('auth-cache.prefixes.api_access', 'api_access:');
-    Cache::put("{$prefix}{$userId}", $access, $this->apiAccessTTL);
+    $this->cache->put("{$prefix}{$userId}", $access, $this->apiAccessTTL);
   }
 
   public function getUserApiAccess(int $userId)
   {
     $prefix = config('auth-cache.prefixes.api_access', 'api_access:');
-    return Cache::get("{$prefix}{$userId}");
+    return $this->cache->get("{$prefix}{$userId}");
   }
 
   public function invalidateUserAccess(int $userId): void
   {
     $prefix = config('auth-cache.prefixes.api_access', 'api_access:');
-    Cache::forget("{$prefix}{$userId}");
+    $this->cache->forget("{$prefix}{$userId}");
   }
 
   public function getApiBySlug(string $slug)
   {
     $prefix = config('auth-cache.prefixes.api_slug', 'api_slug:');
-    return Cache::remember("{$prefix}{$slug}", $this->apiSlugTTL, function () use ($slug) {
+    return $this->cache->remember("{$prefix}{$slug}", $this->apiSlugTTL, function () use ($slug) {
       return DmxApi::active()->bySlug($slug)->first();
     });
   }
@@ -86,30 +83,26 @@ class TokenCacheService
   public function invalidateApiBySlug(string $slug): void
   {
     $prefix = config('auth-cache.prefixes.api_slug', 'api_slug:');
-    Cache::forget("{$prefix}{$slug}");
+    $this->cache->forget("{$prefix}{$slug}");
   }
 
   public function cacheUser(User $user): void
   {
-    if ($user) {
-      $prefix = config('auth-cache.prefixes.user', 'user:');
-      Cache::put("{$prefix}{$user->user_id}", $user, $this->userTTL);
-    }
+    $prefix = config('auth-cache.prefixes.user', 'user:');
+    $this->cache->put("{$prefix}{$user->user_id}", $user, $this->userTTL);
   }
 
   public function getCachedUser(int $userId): ?User
   {
     $prefix = config('auth-cache.prefixes.user', 'user:');
-    return Cache::get("{$prefix}{$userId}");
+    return $this->cache->get("{$prefix}{$userId}");
   }
 
   public function invalidateUser(int $userId): void
   {
     $prefix = config('auth-cache.prefixes.user', 'user:');
-    Cache::forget("{$prefix}{$userId}");
+    $this->cache->forget("{$prefix}{$userId}");
   }
-
-  // ==================== CACHE WARMING METHODS ====================
 
   public function warmUserCache(int $userId): bool
   {
@@ -160,14 +153,11 @@ class TokenCacheService
     return $count;
   }
 
-  // ==================== BULK INVALIDATION METHODS ====================
-
   public function invalidateAllUserData(int $userId): void
   {
     $this->invalidateUser($userId);
     $this->invalidateUserAccess($userId);
 
-    // Invalidate all user tokens
     try {
       PersonalAccessToken::where('tokenable_id', $userId)
         ->whereNull('expires_at')
@@ -197,26 +187,17 @@ class TokenCacheService
     return $count;
   }
 
-  /**
-   * Warm cache for all active users with their API access
-   * @return array ['users' => int, 'failed' => int]
-   */
   public function warmAllActiveUsers(): array
   {
     $count = 0;
     $failed = 0;
 
     try {
-      // Možeš dodati dodatne filtere ako imaš active/inactive status
       User::chunk(100, function ($users) use (&$count, &$failed) {
         foreach ($users as $user) {
           try {
-            // Cache user data
             $this->cacheUser($user);
-
-            // Cache user API access
             $this->cacheUserApiAccess($user->user_id);
-
             $count++;
           } catch (\Exception $e) {
             $failed++;
@@ -232,21 +213,16 @@ class TokenCacheService
 
     return [
       'users' => $count,
-      'failed' => $failed
+      'failed' => $failed,
     ];
   }
 
-  /**
-   * Warm cache for users who have API access only
-   * @return array ['users' => int, 'failed' => int]
-   */
   public function warmUsersWithApiAccess(): array
   {
     $count = 0;
     $failed = 0;
 
     try {
-      // Dobij samo korisnike koji imaju aktivan API pristup
       $userIds = DmxApiUser::active()
         ->notExpired()
         ->distinct()
@@ -273,11 +249,9 @@ class TokenCacheService
 
     return [
       'users' => $count,
-      'failed' => $failed
+      'failed' => $failed,
     ];
   }
-
-  // ==================== CACHE STATISTICS ====================
 
   public function getCacheStats(): array
   {
@@ -292,8 +266,6 @@ class TokenCacheService
   public function flushAllCache(): void
   {
     try {
-      // Ne možemo koristiti Cache::flush() jer bi obrisao sve
-      // Umesto toga, moramo brisati po pattern-u
       Log::info("Cache flush requested - implementing pattern-based clearing would be needed");
     } catch (\Exception $e) {
       Log::error("Failed to flush cache: " . $e->getMessage());
