@@ -287,6 +287,18 @@ php artisan cache:warm-user 123
 
 # Invalidate all user data
 php artisan cache:invalidate-user 123
+
+# Warm samo korisnike
+php artisan auth-cache:warm --users
+
+# Warm samo korisnike sa API pristupom
+php artisan auth-cache:warm --api-users
+
+# Warm sve tokene za aktivne usere
+php artisan auth-cache:warm --tokens
+
+# Warm sve
+php artisan auth-cache:warm --all
 ```
 
 ### Scheduled Jobs
