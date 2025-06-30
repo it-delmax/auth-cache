@@ -16,8 +16,8 @@ trait DmxHasApiTokens
 
     /** @var NewAccessToken $token */
     $token = $this->createToken($tokenName, $abilities, $expiresAt);
-    $cache = app(new TokenCacheService());
-    $cache->cacheToken($token);
+    $cache = app(TokenCacheService::class);
+    $cache->cacheToken($token->accessToken);
 
     return $token;
   }

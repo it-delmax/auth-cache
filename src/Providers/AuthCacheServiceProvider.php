@@ -8,6 +8,9 @@ use ItDelmax\AuthCache\Passwords\DelmaxPasswordBrokerManager;
 use ItDelmax\AuthCache\Providers\AuthServiceProvider;
 use ItDelmax\AuthCache\Providers\CacheEloquentUserProvider;
 use Illuminate\Support\Facades\Auth;
+use ItDelmax\AuthCache\Console\Commands\AuthCacheStats;
+use ItDelmax\AuthCache\Console\Commands\ClearAuthCache;
+use ItDelmax\AuthCache\Console\Commands\WarmAuthCache;
 
 class AuthCacheServiceProvider extends ServiceProvider
 {
@@ -65,7 +68,9 @@ class AuthCacheServiceProvider extends ServiceProvider
     // Load commands
     if ($this->app->runningInConsole()) {
       $this->commands([
-        // Add console commands here if needed
+        WarmAuthCache::class,
+        ClearAuthCache::class,
+        AuthCacheStats::class,
       ]);
     }
   }
