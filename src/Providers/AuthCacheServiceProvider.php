@@ -5,17 +5,15 @@ namespace ItDelmax\AuthCache\Providers;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
 use ItDelmax\AuthCache\Services\TokenCacheService;
-use ItDelmax\AuthCache\Passwords\DelmaxPasswordBrokerManager;
 use ItDelmax\AuthCache\Providers\AuthServiceProvider;
 use ItDelmax\AuthCache\Providers\CacheEloquentUserProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ItDelmax\AuthCache\Console\Commands\AuthCacheConfiguration;
-use ItDelmax\AuthCache\Console\Commands\AuthCacheStats;
 use ItDelmax\AuthCache\Console\Commands\ClearAuthCache;
 use ItDelmax\AuthCache\Console\Commands\InvalidateUserCache;
 use ItDelmax\AuthCache\Console\Commands\WarmAuthCache;
-use ItDelmax\AuthCache\Console\Commands\WarmUserCache;
+use ItDelmax\AuthCache\Console\Commands\WarmUserAuthCache;
 
 class AuthCacheServiceProvider extends ServiceProvider
 {
@@ -76,7 +74,7 @@ class AuthCacheServiceProvider extends ServiceProvider
         WarmAuthCache::class,
         ClearAuthCache::class,
         AuthCacheConfiguration::class,
-        WarmUserCache::class,
+        WarmUserAuthCache::class,
         InvalidateUserCache::class
       ]);
       // ⏱️ Hook scheduling

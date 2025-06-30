@@ -5,7 +5,7 @@ namespace ItDelmax\AuthCache\Console\Commands;
 use Illuminate\Console\Command;
 use ItDelmax\AuthCache\Services\TokenCacheService;
 
-class WarmUserCache extends Command
+class WarmUserAuthCache extends Command
 {
   protected $signature = 'auth-cache:warm-user {userId : ID korisnika}';
   protected $description = 'Warm cache for specific user';
