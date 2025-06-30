@@ -278,15 +278,48 @@ InvalidateExpiredTokensJob::dispatch();
 
 ### Cache Management
 
+Podesavanja:
+U `config/cache.php`, u sekciji `'stores'`, dodaj `auth_cache` store koji koristi tvoju redis konekciju auth_cache
+
+```php
+'stores' => [
+
+    // ... ostali store-ovi ...
+
+    'auth_cache' => [
+        'driver' => 'redis',
+        'connection' => 'auth_cache', // ← ovo je ključ!
+    ],
+
+],
+```
+
+U `config/database.php` podesiti cache store za auth cache:
+⚠️ `'database' => 1` ovo je jako vazno, da bi koristili psoebnu redis bazu i ovo treba da bude isto na svim app koje treba da dele auth-cache
+
+```php
+'redis' => [
+
+    'auth_cache' => [
+        'host' => env('REDIS_HOST', '127.0.0.1'),
+        'password' => env('REDIS_PASSWORD', null),
+        'port' => env('REDIS_PORT', 6379),
+        'database' => 1,
+    ],
+],
+```
+
+Koriscenje iz terminala:
+
 ```bash
 # Show cache configuration
-php artisan cache:stats
+php artisan auth-cache:configuration
 
 # Warm cache for specific user
-php artisan cache:warm-user 123
+php artisan auth-cache:warm-user 123
 
 # Invalidate all user data
-php artisan cache:invalidate-user 123
+php artisan auth-cache:invalidate-user 123
 
 # Warm samo korisnike
 php artisan auth-cache:warm --users

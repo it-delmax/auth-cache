@@ -2,15 +2,20 @@
 
 namespace ItDelmax\AuthCache\Providers;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
 use ItDelmax\AuthCache\Services\TokenCacheService;
 use ItDelmax\AuthCache\Passwords\DelmaxPasswordBrokerManager;
 use ItDelmax\AuthCache\Providers\AuthServiceProvider;
 use ItDelmax\AuthCache\Providers\CacheEloquentUserProvider;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use ItDelmax\AuthCache\Console\Commands\AuthCacheConfiguration;
 use ItDelmax\AuthCache\Console\Commands\AuthCacheStats;
 use ItDelmax\AuthCache\Console\Commands\ClearAuthCache;
+use ItDelmax\AuthCache\Console\Commands\InvalidateUserCache;
 use ItDelmax\AuthCache\Console\Commands\WarmAuthCache;
+use ItDelmax\AuthCache\Console\Commands\WarmUserCache;
 
 class AuthCacheServiceProvider extends ServiceProvider
 {
@@ -70,8 +75,28 @@ class AuthCacheServiceProvider extends ServiceProvider
       $this->commands([
         WarmAuthCache::class,
         ClearAuthCache::class,
-        AuthCacheStats::class,
+        AuthCacheConfiguration::class,
+        WarmUserCache::class,
+        InvalidateUserCache::class
       ]);
+      // ⏱️ Hook scheduling
+      $this->app->afterResolving(Schedule::class, function (Schedule $schedule) {
+        $schedule->job(new \ItDelmax\AuthCache\Jobs\InvalidateExpiredTokensJob())
+          ->hourly()
+          ->name('auth-cache:invalidate-expired-tokens')
+          ->onOneServer();
+
+        $schedule->job(new \ItDelmax\AuthCache\Jobs\WarmAllActiveTokensJob())
+          ->everySixHours()
+          ->name('auth-cache:warm-all-tokens')
+          ->onOneServer();
+
+        $schedule->call(function () {
+          Log::info('🛠️ Daily auth-cache maintenance completed');
+        })->dailyAt('03:00')
+          ->name('auth-cache:daily-maintenance')
+          ->onOneServer();
+      });
     }
   }
 }

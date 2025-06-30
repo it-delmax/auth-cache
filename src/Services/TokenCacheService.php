@@ -253,7 +253,7 @@ class TokenCacheService
     ];
   }
 
-  public function getCacheStats(): array
+  public function getCacheConfiguration(): array
   {
     return [
       'user_ttl' => $this->userTTL,
