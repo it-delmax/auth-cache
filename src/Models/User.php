@@ -77,12 +77,17 @@ class User extends Authenticatable implements MustVerifyEmail
   }
 
   public function getSubjektIdAttribute()
-  {
-    if ($this->account_type_id == 2) {
-      return null;
+  { // Returns the SUBJEKT_ID based on account type
+    // 1 = Employee, 2 = Branch, 3 = Partner 4 = External user
+    if ($this->account_type_id == 1) {
+      return $this->employee->SUBJEKT_ID;
     }
 
-    return $this->partner_id;
+    if ($this->account_type_id == 2) {
+      return $this->partner_id;
+    }
+
+    return null;
   }
 
   /** ------------------- Relacije ------------------- **/
