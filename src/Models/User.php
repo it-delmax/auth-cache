@@ -80,7 +80,7 @@ class User extends Authenticatable implements MustVerifyEmail
   { // Returns the SUBJEKT_ID based on account type
     // 1 = Employee, 2 = Branch, 3 = Partner 4 = External user
     if ($this->account_type_id == 1) {
-      return $this->employee->SUBJEKT_ID;
+      return $this->uposljeni?->SUBJEKT_ID;
     }
 
     if ($this->account_type_id == 2) {
