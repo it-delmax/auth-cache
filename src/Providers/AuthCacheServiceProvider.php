@@ -55,7 +55,7 @@ class AuthCacheServiceProvider extends ServiceProvider
 
 
     $this->publishes([
-      __DIR__ . '/../resources/views' => resource_path('views/vendor/your-package'),
+      __DIR__ . '/../resources/views' => resource_path('views/vendor/auth-cache'),
     ], 'auth-cache-views');
 
 

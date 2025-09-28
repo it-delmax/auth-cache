@@ -3,6 +3,31 @@
 return [
   /*
     |--------------------------------------------------------------------------
+    | Email Notifications
+    |--------------------------------------------------------------------------
+    | Settings for email subjects, frontend URLs, and link expiration times.
+   */
+  'mail' => [
+    'subjects' => [
+      'reset_password' => 'Reset lozinke – :app',
+      'verify_email'   => 'Verifikacija email adrese – :app',
+      'api_token'      => 'Vaš API token – :app',
+    ],
+
+    // Ako imaš frontend rutu za reset/verifikaciju:
+    'frontend' => [
+      'reset_url'  => env('FRONTEND_RESET_URL'),   // npr. https://spa.example.com/reset
+      'verify_url' => env('FRONTEND_VERIFY_URL'),  // npr. https://spa.example.com/verify
+    ],
+
+    // Istek linkova (min)
+    'expires' => [
+      'reset'  => 60,
+      'verify' => 60,
+    ]
+  ],
+  /*
+    |--------------------------------------------------------------------------
     | Cache TTL Settings
     |--------------------------------------------------------------------------
     |
