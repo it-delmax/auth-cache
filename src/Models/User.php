@@ -15,6 +15,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use ItDelmax\AuthCache\Models\Traits\DmxApiAccess;
 use ItDelmax\AuthCache\Models\Traits\DmxHasApiTokens;
+use ItDelmax\AuthCache\Notifications\ResetPasswordNotification;
+use ItDelmax\AuthCache\Notifications\VerifyEmailNotification;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
@@ -136,6 +138,16 @@ class User extends Authenticatable implements MustVerifyEmail
   public function isBranch(): bool
   {
     return $this->account_type_id === 2;
+  }
+
+  public function sendPasswordResetNotification($token): void
+  {
+    $this->notify(new ResetPasswordNotification($token));
+  }
+
+  public function sendEmailVerificationNotification(): void
+  {
+    $this->notify(new VerifyEmailNotification());
   }
 
   /**
