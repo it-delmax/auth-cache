@@ -10,13 +10,13 @@ use ItDelmax\AuthCache\Models\Traits\CachesRelationships;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use ItDelmax\AuthCache\Models\Traits\DmxApiAccess;
 use ItDelmax\AuthCache\Models\Traits\DmxHasApiTokens;
 use ItDelmax\AuthCache\Notifications\ResetPasswordNotification;
 use ItDelmax\AuthCache\Notifications\VerifyEmailNotification;
+use ItDelmax\AuthCache\Services\TokenCacheService;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
@@ -162,5 +162,96 @@ class User extends Authenticatable implements MustVerifyEmail
       4 => 'External user',
       default => 'Unknown',
     };
+  }
+
+  /**
+   * Override Sanctum's currentAccessToken to work with DMX system
+   */
+  public function currentAccessToken()
+  {
+    $token = request()->bearerToken();
+
+    if (!$token) {
+      return null;
+    }
+
+    $parts = explode('|', $token, 2);
+    if (count($parts) !== 2) {
+      return response()->json(['message' => 'Invalid token format'], 401);
+    }
+
+    $plainTextToken = $parts[1];
+
+    $hashedToken = hash('sha256', $plainTextToken);
+
+    $cacheService = app(TokenCacheService::class);
+    $cachedToken = $cacheService->getCachedToken($hashedToken);
+
+    if ($cachedToken) {
+      return (object) [
+        'id' => $cachedToken['token_id'],
+        'name' => 'Cached Token', // možda dodati name u cache
+        'abilities' => $cachedToken['abilities'] ?? [],
+        'token' => $token,
+        'last_used_at' => null,
+        'expires_at' => $cachedToken['expires_at'],
+        'type' => 'dmx',
+        'source' => 'cache'
+      ];
+    }
+
+    // DRUGO - ako nije u cache-u, traži u bazi
+    $dmxToken = PersonalAccessToken::where('token', $hashedToken)->first();
+
+    if ($dmxToken) {
+      $abilities = $dmxToken->ABILITIES ? json_decode($dmxToken->ABILITIES, true) : [];
+
+      // CACHE token za sledeći put
+      $cacheService->cacheToken($dmxToken);
+
+      return (object) [
+        'id' => $dmxToken->id,
+        'name' => $dmxToken->name,
+        'abilities' => $abilities,
+        'token' => $token,
+        'last_used_at' => $dmxToken->last_used_at,
+        'expires_at' => $dmxToken->expires_at,
+        'type' => 'dmx',
+        'source' => 'database'
+      ];
+    }
+
+    // Fallback na parent Sanctum metodu
+    return parent::currentAccessToken();
+  }
+
+  /**
+   * Override tokenCan to work with DMX abilities
+   */
+  public function tokenCan(string $ability): bool
+  {
+    $currentToken = $this->currentAccessToken();
+
+    if (!$currentToken) {
+      return false;
+    }
+
+    // Ako je DMX token
+    if (isset($currentToken->type) && $currentToken->type === 'dmx') {
+      $abilities = $currentToken->abilities ?? [];
+      return in_array('*', $abilities) || in_array($ability, $abilities);
+    }
+
+    // Fallback na parent za Sanctum tokene
+    return parent::tokenCan($ability);
+  }
+
+  /**
+   * Get current token abilities
+   */
+  public function getCurrentTokenAbilities(): array
+  {
+    $currentToken = $this->currentAccessToken();
+    return $currentToken ? ($currentToken->abilities ?? []) : [];
   }
 }
