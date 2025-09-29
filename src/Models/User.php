@@ -2,7 +2,6 @@
 
 namespace ItDelmax\AuthCache\Models;
 
-use ItDelmax\AuthCache\Models\Branch;
 use ItDelmax\AuthCache\Models\Partner;
 use ItDelmax\AuthCache\Models\Uposljeni;
 use ItDelmax\AuthCache\Models\AccountType;
