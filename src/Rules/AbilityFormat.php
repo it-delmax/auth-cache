@@ -14,8 +14,9 @@ class AbilityFormat implements Rule
       return false;
     }
 
+    // Dodaj - (hyphen) u character class
     $this->invalidTags = collect($value)
-      ->filter(fn($tag) => !preg_match('/^[a-z0-9_]+:[a-z0-9_]+$/i', $tag))
+      ->filter(fn($tag) => !preg_match('/^[a-z0-9_-]+:[a-z0-9_-]+$/i', $tag))
       ->toArray();
 
     return empty($this->invalidTags);
@@ -23,6 +24,6 @@ class AbilityFormat implements Rule
 
   public function message()
   {
-    return 'Neispravne dozvole: ' . implode(', ', $this->invalidTags) . '. Koristite format "scope:akcija ili scope:resurs_akcija".';
+    return 'Neispravne dozvole: ' . implode(', ', $this->invalidTags) . '. Koristite format "scope:akcija" ili "scope:resurs-akcija".';
   }
 }
