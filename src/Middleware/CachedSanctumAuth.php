@@ -14,6 +14,19 @@ class CachedSanctumAuth
 {
   public function handle(Request $request, Closure $next)
   {
+    // ✅ Proveri prvo da li je korisnik autentifikovan preko web sesije
+    if (Auth::guard('web')->check()) {
+      $user = Auth::guard('web')->user();
+
+      // Keširam i web korisnika za konzistentnost
+      $cache = app(TokenCacheService::class);
+      if (!$cache->getCachedUser($user->user_id)) {
+        $cache->cacheUser($user);
+      }
+
+      return $next($request);
+    }
+    // Nastavi sa token autentifikacijom ako nije autentifikovan preko web sesije
     $token = $request->bearerToken();
     if (!$token) {
       return response()->json(['message' => 'Unauthorized (missing token)'], 401);
