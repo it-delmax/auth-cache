@@ -31,7 +31,7 @@ class ApiAdminController extends Controller
                 'users_with_api_access' => DmxApiUser::distinct('USER_ID')->count(),
                 'active_api_grants' => DmxApiUser::where('IS_ACTIVE', 1)->count(),
                 'expired_grants' => DmxApiUser::where('EXPIRES_AT', '<', now())->count(),
-                'cache_stats' => $this->cacheService->getCacheStats()
+                'cache_stats' => $this->cacheService->getCacheConfiguration()
             ];
 
             // API usage breakdown

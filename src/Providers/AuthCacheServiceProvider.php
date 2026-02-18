@@ -6,8 +6,6 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
 use ItDelmax\AuthCache\Services\TokenCacheService;
 use ItDelmax\AuthCache\Providers\AuthServiceProvider;
-use ItDelmax\AuthCache\Providers\CacheEloquentUserProvider;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ItDelmax\AuthCache\Console\Commands\AuthCacheConfiguration;
 use ItDelmax\AuthCache\Console\Commands\ClearAuthCache;
@@ -43,13 +41,6 @@ class AuthCacheServiceProvider extends ServiceProvider
     // Register AuthServiceProvider
     $this->app->register(AuthServiceProvider::class);
 
-    Auth::provider('cache-eloquent', function ($app, array $config) {
-      return new CacheEloquentUserProvider(
-        $app['hash'],
-        $config['model'],
-        $app[TokenCacheService::class]
-      );
-    });
     // view namespace
     $this->loadViewsFrom(__DIR__ . '/../resources/views', 'auth-cache');
 

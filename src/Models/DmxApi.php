@@ -50,8 +50,8 @@ class DmxApi extends Model
   {
     parent::__construct($attributes);
 
-    $this->connection = config('auth_cache.connection') ?: parent::getConnectionName();
-    $this->table = config('auth_cache.tables.api_users') ?: parent::getTable();
+    $this->connection = config('auth-cache.connection') ?: parent::getConnectionName();
+    $this->table = config('auth-cache.tables.apis') ?: parent::getTable();
   }
 
   public function apiUsers(): HasMany

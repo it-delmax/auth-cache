@@ -123,7 +123,7 @@ class TokenCacheService
   public function warmTokenCache(string $tokenHash): bool
   {
     try {
-      $token = PersonalAccessToken::where('token', hash('sha256', $tokenHash))->first();
+      $token = PersonalAccessToken::where('token', $tokenHash)->first();
       if ($token) {
         $this->cacheToken($token);
         return true;
@@ -160,8 +160,10 @@ class TokenCacheService
 
     try {
       PersonalAccessToken::where('tokenable_id', $userId)
-        ->whereNull('expires_at')
-        ->orWhere('expires_at', '>', now())
+        ->where(function ($query) {
+          $query->whereNull('expires_at')
+            ->orWhere('expires_at', '>', now());
+        })
         ->get()
         ->each(function ($token) {
           $this->invalidateToken($token->token);
@@ -270,10 +272,22 @@ class TokenCacheService
 
   public function flushAllCache(): void
   {
-    try {
-      Log::info("Cache flush requested - implementing pattern-based clearing would be needed");
-    } catch (\Exception $e) {
-      Log::error("Failed to flush cache: " . $e->getMessage());
+    $prefixes = [
+      config('auth-cache.prefixes.token', 'token:'),
+      config('auth-cache.prefixes.user', 'user:'),
+      config('auth-cache.prefixes.api_access', 'api_access:'),
+      config('auth-cache.prefixes.api_slug', 'api_slug:'),
+    ];
+
+    $redis = $this->cache->getStore()->getRedis();
+
+    foreach ($prefixes as $prefix) {
+      $keys = $redis->keys("*{$prefix}*");
+      if (!empty($keys)) {
+        $redis->del($keys);
+      }
     }
+
+    Log::info('Auth cache flushed', ['prefixes' => $prefixes]);
   }
 }

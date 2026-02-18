@@ -25,7 +25,7 @@ class Branch extends Model
   {
     parent::__construct($attributes);
 
-    $this->connection = config('auth_cache.connection') ?: parent::getConnectionName();
+    $this->connection = config('auth-cache.connection') ?: parent::getConnectionName();
   }
 
   public function getAttribute($key)

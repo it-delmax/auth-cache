@@ -39,9 +39,9 @@ class User extends Authenticatable implements MustVerifyEmail
   {
     parent::__construct($attributes);
 
-    $this->connection = config('auth_cache.connection') ?: parent::getConnectionName();
+    $this->connection = config('auth-cache.connection') ?: parent::getConnectionName();
 
-    $this->table = config('auth_cache.tables.users') ?: parent::getTable();
+    $this->table = config('auth-cache.tables.users') ?: parent::getTable();
   }
 
   protected $fillable = [

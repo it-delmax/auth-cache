@@ -48,8 +48,8 @@ class DmxApiUser extends Model
   {
     parent::__construct($attributes);
 
-    $this->connection = config('auth_cache.connection') ?: parent::getConnectionName();
-    $this->table = config('auth_cache.tables.api_users') ?: parent::getTable();
+    $this->connection = config('auth-cache.connection') ?: parent::getConnectionName();
+    $this->table = config('auth-cache.tables.api_users') ?: parent::getTable();
   }
 
   public function api(): BelongsTo
@@ -121,7 +121,7 @@ class DmxApiUser extends Model
     return $this->IS_ACTIVE && $this->APPROVED_AT && (!$this->EXPIRES_AT || $this->EXPIRES_AT->isFuture());
   }
 
-  public function toogleRevoked()
+  public function toggleRevoked()
   {
     $this->IS_ACTIVE = $this->IS_ACTIVE == 1 ? 0 : 1;
     return $this->save();
